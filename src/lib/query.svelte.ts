@@ -1,18 +1,15 @@
-import { createSubscriber } from 'svelte/reactivity';
 import type {
+	Entry,
+	HumanReadable,
 	Query as QueryDef,
 	ReadonlyJSONValue,
 	Schema,
-	TypedView,
-	Entry,
-	HumanReadable,
-	Change
+	TypedView
 } from '@rocicorp/zero';
-import { applyChange } from '@rocicorp/zero';
 import { getContext } from 'svelte';
+import { createSubscriber } from 'svelte/reactivity';
 import type { Z } from './Z.svelte.js';
 // Not sure why, TS doesn't really want to allow the import using @rocicorp/zero directly
-// this should end up as './shared/immutable.js
 import type { Immutable } from '../../node_modules/@rocicorp/zero/out/shared/src/immutable.d.ts';
 
 export type ResultType = 'unknown' | 'complete';
@@ -82,21 +79,8 @@ class ViewWrapper<
 		// Update data and track new references
 		this.#data = { '': data };
 		this.#refCountMap.set(this.#data, 1);
-
 		this.#status = { type: resultType };
 	};
-
-	// Not used and the applyChange method is depricated
-	// #applyChange(change: Change): void {
-	// 	applyChange(
-	// 		this.#data,
-	// 		change,
-	// 		(this.query as any).schema,
-	// 		'',
-	// 		this.query.format,
-	// 		this.#refCountMap
-	// 	);
-	// }
 
 	#materializeIfNeeded() {
 		if (!this.#view) {
@@ -115,7 +99,6 @@ class ViewWrapper<
 }
 
 class ViewStore {
-	// eslint-disable-next-line
 	#views = new Map<string, ViewWrapper<any, any, any>>();
 
 	getView<TSchema extends Schema, TTable extends keyof TSchema['tables'] & string, TReturn>(

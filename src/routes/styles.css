@@ -1,6 +1,8 @@
 :root {
 	--primary-color: #2563eb;
 	--primary-hover: #1d4ed8;
+	--secondary-color: #eb2525;
+	--secondary-hover: #971515;
 	--background-color: #f8fafc;
 	--text-color: #1e293b;
 	--border-color: #e2e8f0;
@@ -73,8 +75,21 @@ button {
 	transition: background-color 0.2s;
 }
 
+
 button:hover {
 	background-color: var(--primary-hover);
+}
+
+.delete{
+	background-color: var(--secondary-color);
+	padding: var(--spacing-xs);
+	font-size: 0.75rem;
+	
+	/* padding: 1px 1px */
+}
+.delete:hover{
+	background-color: var(--secondary-hover);
+	/* padding: 1px 1px */
 }
 
 ul {

@@ -1,15 +1,9 @@
 <script lang="ts">
-	import './styles.css';
-	import { PUBLIC_SERVER } from '$env/static/public';
 	import { Query } from '$lib/query.svelte.js';
-	import { Z } from '$lib/Z.svelte.js';
-	import { schema, type Schema } from '../schema.js';
-	const z = new Z<Schema>({
-		server: PUBLIC_SERVER,
-		schema,
-		userID: 'anon',
-		kvStore: 'mem'
-	});
+	import { useZero } from '$lib/zero-provider.svelte';
+	import './styles.css';
+
+	const z = useZero();
 
 	let filtered_type: string | undefined = $state();
 
@@ -20,7 +14,7 @@
 		}
 		return new Query(z.current.query.todo.related('type'));
 	});
-$inspect(todos.current)
+
 	// Basic query
 	const types = new Query(z.current.query.type);
 
@@ -43,6 +37,10 @@ $inspect(todos.current)
 		const id = checkbox.value;
 		const completed = checkbox.checked;
 		z.current.mutate.todo.update({ id, completed });
+	}
+
+	async function deleteTodo(id: string) {
+		z.current.mutate.todo.delete({ id });
 	}
 
 	function add_type(event: Event) {
@@ -73,6 +71,7 @@ $inspect(todos.current)
 	</form>
 	<h1>Todos</h1>
 	<select bind:value={filtered_type} name="todo_type" id="todo_type">
+		<option value={null}>All</option>
 		{#each types.current as type}
 			<option value={type.id}>{type.name}</option>
 		{/each}
@@ -80,12 +79,10 @@ $inspect(todos.current)
 	<ul>
 		{#each todos.current as todo}
 			<li>
-				<input
-					type="checkbox"
-					value={todo.id}
-					checked={todo.completed}
-					oninput={toggleTodo}
-				/>{todo.title} - {todo.type?.name}
+				<input type="checkbox" value={todo.id} checked={todo.completed} oninput={toggleTodo} />
+				<h3 class="text-lg">{todo.title}</h3>
+				- {todo.type?.name}
+				<button class="delete" onclick={() => deleteTodo(todo.id)}>X</button>
 			</li>
 		{/each}
 	</ul>
