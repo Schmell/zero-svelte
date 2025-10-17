@@ -63,5 +63,11 @@ export const builder = createBuilder(schema);
 export const queries = {
 	allTypes: syncedQuery('allTypes', zod.tuple([]), () => {
 		return builder.type;
+	}),
+	allTodos: syncedQuery('allTodos', zod.tuple([]), () => {
+		return builder.todo;
+	}),
+	getTodo: syncedQuery('getTodo', zod.tuple([zod.string()]), (id: string) => {
+		return builder.todo.where('id', id).one();
 	})
 };

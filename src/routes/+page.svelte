@@ -4,12 +4,14 @@
 	import { Query } from '$lib/query.svelte.js';
 	import { Z } from '$lib/Z.svelte.js';
 	import { queries, schema, type Schema } from '../schema.js';
+	import { createMutators, type CreateMutators } from './api/mutators/index.js';
 
-	const z = new Z<Schema>({
+	const z = new Z<Schema, CreateMutators>({
 		server: PUBLIC_SERVER,
 		schema,
 		userID: 'anon',
-		kvStore: 'mem'
+		kvStore: 'mem',
+		mutators: createMutators()
 	});
 
 	// Stable Query instance; update when filter changes via event
@@ -24,7 +26,8 @@
 	}
 
 	// Basic query, reactive by default
-	const types = new Query(queries.allTypes());
+	// const types = new Query(queries.allTypes());
+	const types = new Query(z.query.type);
 
 	const randID = () => Math.random().toString(36).slice(2);
 
@@ -40,11 +43,12 @@
 		}
 	}
 
-	function toggleTodo(event: Event) {
-		const checkbox = event.target as HTMLInputElement;
-		const id = checkbox.value;
-		const completed = checkbox.checked;
-		z.mutate.todo.update({ id, completed });
+	function toggle_todo({ currentTarget }: { currentTarget: HTMLInputElement }) {
+		// const checkbox = event.target as HTMLInputElement;
+		// const id = checkbox.value;
+		// const completed = checkbox.checked;
+		// z.mutate.todo.update({ id, completed });
+		z.mutate.todo.toggleComplete(currentTarget.value);
 	}
 
 	function add_type(event: Event) {
@@ -97,7 +101,7 @@
 					type="checkbox"
 					value={todo.id}
 					checked={todo.completed}
-					oninput={toggleTodo}
+					oninput={toggle_todo}
 				/>{todo.title} - {todo.type?.name}
 			</li>
 		{/each}
