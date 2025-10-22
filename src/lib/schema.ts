@@ -11,7 +11,8 @@ import {
 	relationships,
 	string,
 	syncedQuery,
-	table
+	table,
+	type Row
 } from '@rocicorp/zero';
 import { z as zod } from 'zod';
 
@@ -45,6 +46,8 @@ export const schema = createSchema({
 });
 
 export type Schema = typeof schema;
+export type Todo = Row<typeof schema.tables.todo>;
+export type Type = Row<typeof schema.tables.todo>;
 
 type AuthData = {
 	// The logged-in user.
@@ -57,17 +60,3 @@ export const permissions = definePermissions<AuthData, Schema>(schema, () => {
 		type: ANYONE_CAN_DO_ANYTHING
 	};
 });
-
-export const builder = createBuilder(schema);
-
-export const queries = {
-	allTypes: syncedQuery('allTypes', zod.tuple([]), () => {
-		return builder.type;
-	}),
-	allTodos: syncedQuery('allTodos', zod.tuple([]), () => {
-		return builder.todo;
-	}),
-	getTodo: syncedQuery('getTodo', zod.tuple([zod.string()]), (id: string) => {
-		return builder.todo.where('id', id).one();
-	})
-};

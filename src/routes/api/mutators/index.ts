@@ -1,18 +1,25 @@
-// mutators.ts
 import type { CustomMutatorDefs, Transaction } from '@rocicorp/zero';
-import type { Schema } from '../../../schema.js';
+import type { Schema } from '$lib/schema.js';
 
 export function createMutators() {
 	return {
 		type: {
-			insert: async (tx: Transaction<Schema>, { id, name }: { id: string; name: string }) => {
+			create: async (tx: Transaction<Schema>, { id, name }: { id: string; name: string }) => {
 				if (name.length > 100) throw new Error(`Name is too long`);
-				console.log(id, name);
-				await tx.mutate.type.upsert({ id, name });
+				await tx.mutate.type.insert({ id, name });
+			},
+
+			update: async (tx: Transaction<Schema>, { id, name }: { id: string; name: string }) => {
+				if (name.length > 100) throw new Error(`Name is too long`);
+				await tx.mutate.type.update({ id, name });
+			},
+
+			delete: async (tx: Transaction<Schema>, id: string) => {
+				await tx.mutate.type.delete({ id });
 			}
 		},
 		todo: {
-			insert: async (
+			create: async (
 				tx: Transaction<Schema>,
 				{
 					id,
@@ -37,13 +44,16 @@ export function createMutators() {
 				}: { id: string; type_id: string; completed: boolean; title: string }
 			) => {
 				// Validate title length. Legacy issues are exempt.
-				if (title.length > 100) {
-					throw new Error(`Title is too long`);
-				}
+				if (title.length > 100) throw new Error(`Title is too long`);
+
 				await tx.mutate.todo.update({ id, title, completed, type_id });
 			},
 
-			toggleComplete: async (tx: Transaction<Schema>, id: string) => {
+			delete: async (tx: Transaction<Schema>, id: string) => {
+				await tx.mutate.todo.delete({ id });
+			},
+
+			toggle_complete: async (tx: Transaction<Schema>, id: string) => {
 				const currentTodo = await tx.query.todo.where('id', id).one();
 				const completed = !currentTodo?.completed;
 				await tx.mutate.todo.update({ id, completed });

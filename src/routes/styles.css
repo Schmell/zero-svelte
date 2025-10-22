@@ -1,7 +1,9 @@
 :root {
 	--primary-color: #2563eb;
 	--primary-hover: #1d4ed8;
-	--background-color: #f8fafc;
+	--error-color: #e84444;
+	--error-hover: #eb2525;
+	--background-color: #f8fafc9b;
 	--text-color: #1e293b;
 	--border-color: #e2e8f0;
 	--input-background: #ffffff;
@@ -44,6 +46,7 @@ h1 {
 
 form {
 	display: flex;
+	align-items: center;
 	gap: var(--spacing-sm);
 	margin-bottom: var(--spacing-lg);
 	background: var(--input-background);
@@ -105,3 +108,20 @@ input[type='checkbox'] {
 select {
 	cursor: pointer;
 }
+
+dialog {
+	border-color: var(--border-color);
+	box-shadow: var(--shadow-md);
+	border-radius: var(--radius-md);
+	border-width: 1px;
+}
+
+.ghost {
+	background-color: transparent;
+	font-size: 1rem;
+	padding: 4px;
+	border-radius: 100%;
+	padding: 8px;
+
+}
+
